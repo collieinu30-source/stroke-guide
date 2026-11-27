@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="دليل الجلطة">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#070d12">
+<title>دليل الجلطة الدماغية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: هادئ وطبي، لأسرة تريد أن تفهم ما حدث
+   IDEA: محطة تشريح رقمية في قسم الأعصاب: جسم حقيقي تطير حوله بالأسهم
+   PICTURE: النموذج يملأ الشاشة؛ المخيخ الأيمن والشريان المسدود ينبضان بالأحمر، الدم يجري في الشرايين
+   COLOUR and TYPE: ليل أزرق-أسود، عضل أحمر، عظم عاجي، أعصاب صفراء، أحمر للإصابة فقط؛ IBM Plex Sans Arabic
+   LAYOUT: شاشة كاملة، شريط تبويبات سفلي، لوحات تنزلق عند الطلب، أسهم تحكم فوق الشريط */
+:root{color-scheme:dark;--bg:#070d12;--glass:rgba(12,22,30,.9);--line:rgba(140,180,200,.22);--ink:#e8f1f5;--mute:#9db3bf;--red:#ff4d55;--gold:#ffc94d;--tab:64px;--sb:env(safe-area-inset-bottom);--st:env(safe-area-inset-top)}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:16px/1.65 "IBM Plex Sans Arabic",Tahoma,sans-serif;overscroll-behavior:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #5fb4ff;outline-offset:2px}
+.num{direction:ltr;unicode-bidi:isolate;white-space:nowrap;font-weight:700}
+/* top */
+.top{position:fixed;top:calc(8px + var(--st));inset-inline:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;pointer-events:none;z-index:5}
+.top>*{pointer-events:auto}
+.title{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:6px 12px;font-size:14px;line-height:1.35;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.title b{display:block;font-size:15px}
+.pills{display:flex;gap:6px;align-items:center;flex:none}
+.title{flex:1 1 0}
+.pill{border:1px solid var(--line);background:var(--glass);border-radius:999px;min-height:40px;padding:4px 12px;font-size:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.pill.sos{background:#b3141c;border-color:#e0434b;font-weight:700;padding:4px 16px;white-space:nowrap;min-width:76px;text-align:center}
+/* info card */
+#info{position:fixed;top:calc(64px + var(--st));inset-inline:10px;max-width:440px;margin-inline-start:auto;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:12px 14px 12px 44px;font-size:15px;line-height:1.6;display:none;z-index:6;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#info h3{margin:0 0 2px;font-size:17px;color:#fff}
+#info .en{font-size:12px;color:var(--mute);direction:ltr;text-align:right}
+#info .x{position:absolute;top:6px;left:6px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.08)}
+/* controls (Roblox-like) */
+.ctl{position:fixed;bottom:calc(var(--tab) + var(--sb) + 14px);z-index:4;direction:ltr;display:grid;gap:6px;transition:opacity .2s}
+.ctl button{width:50px;height:50px;border-radius:14px;border:1px solid var(--line);background:rgba(12,22,30,.72);font-size:22px;line-height:1;display:grid;place-items:center;user-select:none;-webkit-user-select:none;touch-action:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.ctl button:active,.ctl button.on{background:rgba(95,180,255,.35)}
+#pad{left:12px;grid-template-columns:repeat(3,50px);grid-template-areas:". u ." "l c r" ". d ."}
+#pad .c{grid-area:c;font-size:13px}
+#vz{right:12px;grid-template-columns:repeat(2,50px)}
+#vz button{font-size:15px;font-weight:700}
+body.sheet-open .ctl{opacity:0;pointer-events:none}
+/* tabs */
+nav.tabs{position:fixed;bottom:0;inset-inline:0;height:calc(var(--tab) + var(--sb));padding-bottom:var(--sb);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:rgba(7,13,18,.94);border-top:1px solid var(--line);z-index:8;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+nav.tabs button{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12.5px;color:var(--mute);min-height:44px}
+nav.tabs svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button[aria-selected=true]{color:#fff}
+nav.tabs button[aria-selected=true] svg{stroke:var(--red)}
+/* sheet */
+#sheet{position:fixed;inset-inline:0;bottom:calc(var(--tab) + var(--sb));max-height:62dvh;height:62dvh;background:var(--glass);border-top:1px solid var(--line);border-radius:22px 22px 0 0;z-index:7;transform:translateY(110%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+body.sheet-open #sheet{transform:none}
+.sh-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 4px;gap:8px}
+.sh-head h2{margin:0;font-size:20px}
+.grab{position:absolute;top:6px;left:50%;width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.25);transform:translateX(-50%)}
+.close{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;min-height:40px;padding:4px 14px;font-size:14px}
+.sh-body{overflow-y:auto;padding:4px 16px 24px;-webkit-overflow-scrolling:touch}
+.sh-body p{margin:0 0 10px}
+.sh-body h3{font-size:16px;margin:16px 0 6px;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.chip{border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:999px;min-height:42px;padding:6px 14px;font-size:14.5px;display:inline-flex;align-items:center;gap:8px}
+.chip[aria-pressed=true]{background:#e8f1f5;color:#071017;border-color:#e8f1f5}
+.chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.card{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.card.hot{border-color:rgba(255,77,85,.6);background:rgba(255,77,85,.08)}
+.card b{color:#fff}
+ul{margin:4px 0 8px;padding-inline-start:20px}li{margin:3px 0}
+.leg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:6px;font-size:14px}
+.leg span{display:flex;gap:8px;align-items:center}.leg i{width:12px;height:12px;border-radius:3px;flex:none}
+input[type=range]{width:100%;height:44px;accent-color:var(--red)}
+.meter{height:12px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--red);transition:width .3s}
+.scale{display:flex;border-radius:8px;overflow:hidden;font-size:11.5px;text-align:center;color:#fff;margin:8px 0}
+.scale span{flex:1;padding:5px 2px;line-height:1.3}
+.cat{display:inline-block;padding:3px 12px;border-radius:999px;color:#fff;font-weight:600}
+.fast{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.fast div{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center;font-size:13.5px}
+.fast b{display:block;font-size:22px;color:var(--red)}
+.small{font-size:13px;color:var(--mute)}
+/* loader */
+#load{position:fixed;inset:0;z-index:20;background:var(--bg);display:grid;place-items:center;text-align:center;padding:24px;transition:opacity .5s}
+#load .bar{width:min(260px,70vw);height:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden;margin:14px auto 8px}
+#load .bar i{display:block;height:100%;width:0;background:var(--red);transition:width .2s}
+#load h1{font-size:24px;margin:0}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(min-width:900px){#sheet{inset-inline-start:auto;width:420px;inset-inline-end:16px;border-radius:22px;bottom:calc(var(--tab) + 16px);border:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="نموذج تشريحي ثلاثي الأبعاد"></canvas>
+
+<div id="load"><div><h1>دليل الجلطة الدماغية</h1><div class="bar"><i id="lbar"></i></div><div class="small" id="ltxt">جارٍ تحميل النموذج التشريحي…</div></div></div>
+
+<div class="top">
+  <div class="title"><b>جلطة المخيخ الأيمن</b><span class="small">اسحب للتدوير · الأسهم للتنقل · اضغط على أي عضو</span></div>
+  <div class="pills">
+    <button class="pill" id="bpPill" aria-label="ضغط الدم"><span class="num" id="bpTop">200/110</span></button>
+    <button class="pill sos" id="sos">طوارئ</button>
+  </div>
+</div>
+
+<div id="info" role="dialog" aria-live="polite"><button class="x" id="infoX" aria-label="إغلاق">✕</button><div id="infoBody"></div></div>
+
+<div class="ctl" id="pad" aria-label="أسهم التنقل">
+  <button data-mv="f" style="grid-area:u" aria-label="للأمام">▲</button>
+  <button data-mv="l" style="grid-area:l" aria-label="يسار">◀</button>
+  <button class="c" id="reset" aria-label="إعادة الضبط">⟲</button>
+  <button data-mv="r" style="grid-area:r" aria-label="يمين">▶</button>
+  <button data-mv="b" style="grid-area:d" aria-label="للخلف">▼</button>
+</div>
+<div class="ctl" id="vz" aria-label="الارتفاع والتكبير">
+  <button data-mv="u" aria-label="للأعلى">⤒</button><button data-mv="i" aria-label="تكبير">＋</button>
+  <button data-mv="d" aria-label="للأسفل">⤓</button><button data-mv="o" aria-label="تصغير">－</button>
+</div>
+
+<section id="sheet" aria-live="polite">
+  <div class="grab"></div>
+  <div class="sh-head"><h2 id="shTitle"></h2><button class="close" id="shClose">إخفاء ▾</button></div>
+  <div class="sh-body" id="shBody"></div>
+</section>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-tab="body" aria-selected="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2.2"/><path d="M12 7v7M7 9.5l5-1.5 5 1.5M9 22l3-8 3 8"/></svg>الجسم</button>
+  <button role="tab" data-tab="brain" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/></svg>الدماغ</button>
+  <button role="tab" data-tab="stroke" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>الجلطة</button>
+  <button role="tab" data-tab="heart" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M5 12h4l1.5-3 2 6 1.5-3H19"/></svg>القلب</button>
+  <button role="tab" data-tab="bp" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/><circle cx="12" cy="16" r="1.4"/></svg>الضغط</button>
+</nav>
+
+<template id="t-body">
+  <p>نموذج تشريحي حقيقي: عظام وعضلات بأسمائها، شرايين كبيرة وصغيرة يجري فيها الدم، وأعصاب. اضغط على أي جزء لتعرف اسمه ووظيفته.</p>
+  <h3>الطبقات</h3>
+  <div class="chips" data-layers="skin,muscles,bones,arteries,nerves,brain,heart"></div>
+  <h3>انتقل إلى</h3>
+  <div class="chips"><button class="chip" data-go="body">الجسم كامل</button><button class="chip" data-go="handR">اليد اليمنى</button><button class="chip" data-go="faceR">الوجه</button><button class="chip" data-go="neck">شرايين الرقبة</button></div>
+  <div class="leg"><span><i style="background:#c0392b"></i>عضلات بأليافها</span><span><i style="background:#e9dfc8"></i>عظام</span><span><i style="background:#ff3b3b"></i>شرايين (الدم يجري)</span><span><i style="background:#ffd23f"></i>أعصاب</span><span><i style="background:#ff8a00"></i>مناطق متأثرة</span></div>
+  <p class="small" style="margin-top:14px">للتثقيف فقط ولا يغني عن الطبيب. النماذج التشريحية من مشروع Z-Anatomy (رخصة CC BY-SA 4.0)، مسارات الألياف من أطلس HCP1065 (Yeh 2022)، وتقسيم الفصوص من أطلس AAL. الشرايين الدقيقة مرسومة تقريبياً على سطح الدماغ الحقيقي.</p>
+</template>
+
+<template id="t-brain">
+  <p>دماغ حقيقي بتلافيفه وأخاديده، المخيخ بفصيصاته، جذع الدماغ، والحبل الشوكي. الألياف الملونة هي مسارات عصبية حقيقية من أطلس تصوير الدماغ.</p>
+  <h3>الطبقات</h3>
+  <div class="chips" data-layers="cortex,lobes,cerebellum,brainstem,brainart,tracts,cord"></div>
+  <h3>شريحة داخل الدماغ</h3>
+  <p class="small">حرّك المؤشر لقطع نصف الدماغ ورؤية ما بداخله.</p>
+  <input type="range" id="clip" min="-0.075" max="0.075" step="0.001" value="0.075" aria-label="قص الدماغ">
+  <h3>انتقل إلى</h3>
+  <div class="chips"><button class="chip" data-go="brain">الدماغ</button><button class="chip" data-go="brainBack">من الخلف</button><button class="chip" data-go="brainBase">قاعدة الدماغ والشرايين</button><button class="chip" data-go="cbl">المخيخ</button></div>
+  <h3>ألوان الفصوص (عند تفعيل «تلوين الفصوص»)</h3>
+  <div class="leg"><span><i style="background:#de786e"></i>الجبهي: التفكير والسلوك</span><span><i style="background:#f05a5a"></i>شريط الحركة</span><span><i style="background:#5ac8dc"></i>شريط الإحساس</span><span><i style="background:#6eaae1"></i>الجداري: الإحساس والمكان</span><span><i style="background:#78c88c"></i>الصدغي: السمع والذاكرة واللغة</span><span><i style="background:#e6be5a"></i>القذالي: الرؤية</span><span><i style="background:#be8cdc"></i>الجزيرة والحوفي</span></div>
+  <h3>ألوان الألياف العصبية</h3>
+  <div class="leg"><span><i style="background:#b678ff"></i>مسار الحركة (القشري الشوكي)</span><span><i style="background:#ff7a3d"></i>سويقات المخيخ</span><span><i style="background:#ffb03d"></i>مسار المخيخ ← المهاد</span><span><i style="background:#3dd6ff"></i>مسار الإحساس</span><span><i style="background:#ffe14d"></i>الأعصاب القحفية</span><span><i style="background:#8fe388"></i>الجسم الثفني</span><span><i style="background:#9aa7ff"></i>مسارات اللغة والربط</span></div>
+</template>
+
+<template id="t-stroke">
+  <div class="chips"><button class="chip" data-go="lesion">المخيخ المصاب</button><button class="chip" data-go="pica">الشريان المسدود</button><button class="chip" data-go="stem">جذع الدماغ</button><button class="chip" data-go="handR">اليد</button><button class="chip" data-go="faceR">الوجه</button></div>
+  <div class="card hot"><b>ما حدث (مثال توضيحي)</b><p style="margin:4px 0 0">خثرة سدّت الشريان المخيخي الخلفي السفلي الأيمن (PICA)، فانقطع الدم عن الجزء السفلي من المخيخ الأيمن وعن جزء صغير ملاصق من جذع الدماغ. في النموذج: الشريان الداكن بلا دم، والمنطقة الحمراء النابضة هي المتأثرة.</p></div>
+  <h3>لماذا ظهرت الأعراض؟</h3>
+  <div class="card"><b>القبضة ثقيلة رغم أن اليد ترتفع</b><p style="margin:4px 0 0">عضلات الكتف والذراع الكبيرة تأخذ أوامرها من مسار الحركة الرئيسي، وهو سليم، لذلك يرفع يده ويحركها. أما إغلاق القبضة والتحكم بكل إصبع فيحتاج تنسيق المخيخ لتوقيت عشرات العضلات الصغيرة في الساعد واليد (البرتقالية في النموذج). المخيخ يتحكم في <b>نفس الجهة</b>، فإصابة الأيمن تظهر في اليد اليمنى.</p></div>
+  <div class="card"><b>تنميل وضعف نصف الوجه الأيمن</b><p style="margin:4px 0 0">العصب الخامس (البرتقالي في الوجه) ينقل إحساس الوجه، ونواته تمتد داخل جذع الدماغ بجانب المخيخ. تأثر هذا الجزء من جذع الدماغ يفسّر التنميل في نفس الجهة.</p></div>
+  <div class="card"><b>ثقل الكلام</b><p style="margin:4px 0 0">عضلات اللسان والشفاه سليمة، لكن المخيخ لم يعد يضبط توقيتها مع التنفس، فيخرج الكلام بطيئاً أو متقطعاً.</p></div>
+  <p class="small">شرح تعليمي عام. الطبيب وصور الرنين هم من يحددون مكان الجلطة بدقة.</p>
+  <h3>علامات خطر — اتصل بالإسعاف فوراً</h3>
+  <ul><li>صداع شديد مفاجئ أو قيء متكرر</li><li>نعاس غير طبيعي أو صعوبة الاستيقاظ</li><li>زيادة ثقل الكلام أو ضعف الجسم أو عدم القدرة على الوقوف</li><li>ازدواج الرؤية أو صعوبة البلع أو التنفس</li></ul>
+  <p class="small">المخيخ في مساحة ضيقة، وقد يتورم في الأيام الأولى ويضغط على جذع الدماغ.</p>
+  <h3>علامات الجلطة B.E. F.A.S.T</h3>
+  <div class="fast"><div><b>B</b>توازن</div><div><b>E</b>نظر</div><div><b>F</b>الوجه</div><div><b>A</b>الذراع</div><div><b>S</b>الكلام</div><div><b>T</b>اتصل فوراً</div></div>
+  <h3>التعافي</h3>
+  <p>أسرع تحسن غالباً في أول 3–6 أشهر ويستمر بعدها. المخيخ يتعلم بالتكرار: عصر كرة إسفنجية، فتح وإغلاق الأصابع ببطء، التقاط أشياء صغيرة، تمارين النطق بصوت عالٍ — بإشراف أخصائي علاج طبيعي ونطق.</p>
+</template>
+
+<template id="t-heart">
+  <p>القلب الحقيقي ينبض في النموذج، والشرايين التاجية على سطحه. حرّك الضغط وشاهد القلب يدق أسرع ويتضخم والدم يندفع أقوى في الشرايين.</p>
+  <div class="chips"><button class="chip" data-go="heart">القلب</button><button class="chip" data-go="aorta">الشريان الأبهر</button></div>
+  <div data-bp></div>
+  <h3>ماذا يحدث للقلب مع الضغط المرتفع؟</h3>
+  <div class="card"><b>يضخ ضد مقاومة أعلى</b><p style="margin:4px 0 0">البطين الأيسر يدفع الدم إلى الأبهر. كلما ارتفع الضغط احتاج قوة أكبر في كل نبضة واستهلك أكسجيناً أكثر.</p></div>
+  <div class="card"><b>يتضخم جداره ويتصلب</b><p style="margin:4px 0 0">مع الوقت يزداد سمك جدار البطين الأيسر، فيمتلئ بصعوبة، وقد يؤدي ذلك إلى قصور القلب.</p></div>
+  <div class="card"><b>اضطراب النبض</b><p style="margin:4px 0 0">التضخم يزيد خطر الرجفان الأذيني، الذي يكوّن خثرات قد تذهب إلى الدماغ وتسبب جلطة جديدة.</p></div>
+</template>
+
+<template id="t-bp">
+  <div data-bp></div>
+  <div class="card hot"><b>ضغط 200 أو أعلى = أزمة ارتفاع ضغط.</b> إذا صاحبه صداع شديد، قيء، ألم صدر، ضيق نفس، تشوش رؤية، أو زاد ثقل الكلام أو ضعف اليد: الإسعاف فوراً <span class="num">997</span> أو <span class="num">911</span>. وبدون أعراض: تواصلوا مع الطبيب اليوم.</div>
+  <h3>ماذا يسبب ضغط 200–250؟</h3>
+  <ul><li><b>الدماغ:</b> نزيف دماغي، جلطة جديدة، تورم الدماغ (صداع، تشوش، تشنجات)</li><li><b>القلب والأبهر:</b> نوبة قلبية، ماء على الرئة، تسلّخ الأبهر (ألم شديد يمتد للظهر)</li><li><b>الكلى والعين:</b> فشل كلوي حاد، نزيف في الشبكية</li></ul>
+  <h3>أسباب شائعة لارتفاعه بعد الجلطة</h3>
+  <ul><li>عدم انتظام الدواء أو جرعة غير كافية</li><li>الملح: المخللات، الأجبان المالحة، الوجبات السريعة</li><li>الألم، التوتر، قلة النوم، الإمساك</li><li>بعض المسكنات (الإيبوبروفين) وأدوية الزكام المزيلة للاحتقان</li><li>اضطراب السكر، أمراض الكلى، انقطاع النفس أثناء النوم</li></ul>
+  <div class="card"><b>مهم:</b> بعد الجلطة، خفض الضغط بسرعة في البيت قد يقلل الدم الواصل للمنطقة المتأثرة. لا تُضاعف الجرعات ولا يؤخذ دواء جديد بدون الطبيب. قيسوا مرتين يومياً وسجّلوا القراءات.</div>
+  <h3>السكر والضغط معاً</h3>
+  <p>السكر يضعف جدار الشرايين من الداخل، والضغط يضربها في كل نبضة، واجتماعهما يضاعف خطر الجلطة الثانية. كثير من الأطباء يستهدفون أقل من <span class="num">130/80</span> وتراكمي سكر قرابة <span class="num">7%</span> بعد الاستقرار — والهدف الدقيق يحدده الطبيب.</p>
+  <p class="small">ثقل الكلام أو التعرق أو التشوش قد يكون هبوط سكر؛ القياس يفرّق، لكن لا تتأخروا عن الإسعاف إذا لم يتحسن.</p>
+  <h3>القياس الصحيح</h3>
+  <ul><li>جلوس هادئ 5 دقائق، الظهر مسنود والقدمان على الأرض</li><li>الذراع على طاولة بمستوى القلب</li><li>قراءتان بينهما دقيقة، وتسجيل الوقت</li></ul>
+</template>
+
+<template id="t-bpctl">
+  <label>الضغط الانقباضي (العلوي): <span class="num" data-v="s">200</span></label>
+  <input type="range" data-k="s" min="100" max="250" step="5" value="200">
+  <label>الضغط الانبساطي (السفلي): <span class="num" data-v="d">110</span></label>
+  <input type="range" data-k="d" min="60" max="140" step="5" value="110">
+  <div class="scale" aria-hidden="true"><span style="background:#2e9e6b">طبيعي<br>‎&lt;120</span><span style="background:#8fae2b">مرتفع<br>120–129</span><span style="background:#e0a21e">مرحلة 1<br>130–139</span><span style="background:#e0701e">مرحلة 2<br>140+</span><span style="background:#c62828">أزمة<br>180+</span></div>
+  <p>التصنيف: <span class="cat" data-v="cat"></span> · النبض في النموذج: <span class="num" data-v="hr"></span></p>
+  <p style="margin-bottom:4px">الجهد على القلب مقارنة بـ <span class="num">120/80</span> (تقريبي)</p>
+  <div class="meter"><i data-v="load"></i></div>
+  <p class="small" data-v="txt" style="margin-top:6px"></p>
+</template>
+
+<template id="t-sos">
+  <div class="card hot"><b>اتصلوا بالإسعاف فوراً في السعودية: <span class="num">997</span> (الهلال الأحمر) أو <span class="num">911</span></b></div>
+  <ul><li>ضغط 180 أو أكثر مع صداع شديد، قيء، ألم صدر، ضيق نفس، أو تشوش رؤية</li><li>زيادة ثقل الكلام، ضعف جديد، ميلان الوجه، أو فقدان التوازن</li><li>نعاس شديد أو صعوبة الاستيقاظ أو تشنج</li></ul>
+  <p>حتى بدون أعراض: ضغط 200 يحتاج تواصل مع الطبيب اليوم لضبط الدواء. لا تُخفّضوه بجرعات إضافية من عندكم.</p>
+  <p class="small">هذا التطبيق للتثقيف فقط ولا يغني عن الطبيب.</p>
+</template>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
+import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fail=e=>{$('#ltxt').textContent='حدث خطأ في التحميل: '+(e&&e.message||e);console.error(e)};
+try{
+// ---------- renderer ----------
+const canvas=$('#c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.localClippingEnabled=true;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x070d12);
+scene.fog=new THREE.Fog(0x070d12,4,9);
+const camera=new THREE.PerspectiveCamera(42,1,0.002,30);
+scene.add(new THREE.HemisphereLight(0xcfe6ff,0x1a1010,1.1));
+const key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(1.5,3,2.5);scene.add(key);
+const fill=new THREE.DirectionalLight(0x88bbff,0.9);fill.position.set(-2,1,-2);scene.add(fill);
+const camLight=new THREE.PointLight(0xffffff,0.6,0,0);camera.add(camLight);scene.add(camera);
+// floor glow
+const floor=new THREE.Mesh(new THREE.CircleGeometry(0.6,64),new THREE.MeshBasicMaterial({color:0x13324a,transparent:true,opacity:.5}));floor.rotation.x=-Math.PI/2;scene.add(floor);
+
+const U={time:{value:0},beat:{value:0},bp:{value:.64},clip:{value:new THREE.Vector4(1,0,0,0.075)}};
+const clipPlane=new THREE.Plane(new THREE.Vector3(-1,0,0),0.075);
+const L={};const layer=n=>L[n]||(L[n]=Object.assign(new THREE.Group(),{name:n}));
+['skin','muscles','bones','arteries','nerves','heart','cortex','cerebellum','brainstem','brainart','tracts','cord','lesion'].forEach(n=>scene.add(layer(n)));
+const pickables=[];
+
+// ---------- names (Arabic) ----------
+const NM=[
+['flexor digitorum superficialis','العضلة المثنية السطحية للأصابع','grip'],['flexor digitorum profundus','العضلة المثنية العميقة للأصابع','grip'],['flexor pollicis','عضلة ثني الإبهام','grip'],
+['flexor carpi','عضلة ثني الرسغ','grip'],['extensor digitorum','العضلة الباسطة للأصابع','grip'],['extensor carpi','عضلة بسط الرسغ','grip'],['extensor pollicis','باسطة الإبهام','grip'],['extensor indicis','باسطة السبابة','grip'],
+['interosse','العضلات بين العظام في اليد','hand'],['lumbrical','العضلات الدودية في اليد','hand'],['opponens','العضلة المقابلة','hand'],['abductor pollicis','مبعدة الإبهام','hand'],['adductor pollicis','مقربة الإبهام','hand'],['flexor digiti minimi','مثنية الخنصر','hand'],['abductor digiti minimi','مبعدة الخنصر','hand'],['palmaris','العضلة الراحية','grip'],
+['pronator','العضلة الكابّة (تدوير الساعد)','grip'],['supinator','العضلة الباطحة (تدوير الساعد)','grip'],['brachioradialis','العضلة العضدية الكعبرية','arm'],
+['biceps brachii','العضلة ذات الرأسين العضدية','arm'],['triceps','العضلة ثلاثية الرؤوس','arm'],['brachialis','العضلة العضدية','arm'],['coracobrachialis','العضلة الغرابية العضدية','arm'],['deltoid','العضلة الدالية (الكتف)','arm'],
+['supraspinatus','فوق الشوكة','arm'],['infraspinatus','تحت الشوكة','arm'],['teres','العضلة المدوّرة','arm'],['subscapularis','تحت الكتف','arm'],
+['pectoralis major','العضلة الصدرية الكبرى','arm'],['pectoralis minor','الصدرية الصغرى'],['serratus','العضلة المنشارية'],['trapezius','العضلة شبه المنحرفة'],['latissimus','العضلة العريضة الظهرية'],['rhomboid','العضلة المعينية'],['levator scapulae','رافعة لوح الكتف'],
+['sternocleidomastoid','العضلة القصية الترقوية الخشائية (الرقبة)'],['platysma','العضلة الجلدية العنقية'],['masseter','عضلة المضغ (الماضغة)','face'],['temporalis','العضلة الصدغية','face'],
+['orbicularis oculi','العضلة الدويرية حول العين','face'],['orbicularis oris','العضلة الدويرية حول الفم','face'],['zygomaticus','العضلة الوجنية (الابتسامة)','face'],['buccinator','العضلة المبوقة (الخد)','face'],['risorius','عضلة الضحك','face'],['depressor','عضلة خافضة (الوجه)','face'],['levator labii','رافعة الشفة','face'],['mentalis','عضلة الذقن','face'],['nasalis','عضلة الأنف','face'],['frontal','العضلة الجبهية','face'],['occipitofrontalis','العضلة القذالية الجبهية','face'],['procerus','عضلة أعلى الأنف','face'],['corrugator','العضلة المجعّدة للحاجب','face'],
+['rectus abdominis','العضلة المستقيمة البطنية'],['oblique','العضلة المائلة البطنية'],['transversus abdominis','العضلة البطنية المستعرضة'],['intercostal','العضلات بين الضلوع (التنفس)'],['diaphragm','الحجاب الحاجز'],['erector','العضلات الناصبة للظهر'],['multifidus','العضلات متعددة الأقسام (الظهر)'],
+['gluteus','العضلة الألوية'],['iliacus','العضلة الحرقفية'],['psoas','العضلة القطنية'],['rectus femoris','العضلة المستقيمة الفخذية'],['vastus','العضلة المتسعة الفخذية'],['sartorius','العضلة الخياطية'],['gracilis','العضلة الناحلة'],['adductor','العضلة المقرِّبة للفخذ'],['biceps femoris','ذات الرأسين الفخذية'],['semitendinosus','العضلة نصف الوترية'],['semimembranosus','العضلة نصف الغشائية'],['tensor fasciae','موتّرة اللفافة'],['pectineus','العضلة المشطية'],
+['gastrocnemius','عضلة الساق التوأمية'],['soleus','العضلة النعلية'],['tibialis anterior','العضلة الظنبوبية الأمامية'],['tibialis posterior','الظنبوبية الخلفية'],['fibularis','العضلة الشظوية'],['extensor hallucis','باسطة إبهام القدم'],['flexor hallucis','مثنية إبهام القدم'],['plantaris','العضلة الأخمصية'],
+['tongue','اللسان'],['genioglossus','عضلة اللسان'],['hyoid','عضلات اللامي'],['scalene','العضلات الأخمعية (الرقبة)'],['splenius','العضلة الطحالية (الرقبة)'],
+['humerus','عظم العضد'],['radius','عظم الكعبرة'],['ulna','عظم الزند'],['femur','عظم الفخذ'],['tibia','عظم الظنبوب (الساق)'],['fibula','عظم الشظية'],['clavicle','عظم الترقوة'],['scapula','عظم لوح الكتف'],['sternum','عظم القص'],['rib','ضلع'],['vertebra','فقرة'],['atlas','الفقرة العنقية الأولى'],['axis','الفقرة العنقية الثانية'],['sacrum','عظم العجز'],['coccyx','عظم العصعص'],['hip bone','عظم الورك'],['patella','الرضفة (الركبة)'],
+['frontal bone','العظم الجبهي'],['parietal','العظم الجداري'],['occipital','العظم القذالي'],['temporal bone','العظم الصدغي'],['sphenoid','العظم الوتدي'],['ethmoid','العظم الغربالي'],['mandible','الفك السفلي'],['maxilla','الفك العلوي'],['zygomatic','عظم الوجنة'],['nasal','عظم الأنف'],
+['phalanx','سُلامى (عظم إصبع)'],['metacarpal','عظم مشط اليد'],['metatarsal','عظم مشط القدم'],['scaphoid','عظم زورقي (الرسغ)'],['lunate','عظم هلالي (الرسغ)'],['capitate','العظم الكبير (الرسغ)'],['hamate','العظم الكلابي (الرسغ)'],['trapezi','عظم الرسغ'],['pisiform','عظم الرسغ'],['triquetr','عظم الرسغ'],['talus','عظم الكاحل'],['calcane','عظم العقب'],['cuneiform','عظم القدم'],['navicular','عظم القدم'],['cuboid','عظم القدم'],
+['incisor','سن قاطع'],['canine','ناب'],['molar','ضرس'],['premolar','ضاحك'],['malleus','عظيمة المطرقة (الأذن)'],['incus','عظيمة السندان (الأذن)'],['stapes','عظيمة الركاب (الأذن)']];
+const GROUPTXT={grip:'من عضلات الساعد التي تغلق القبضة وتفتحها وتحرك الأصابع. قوتها موجودة، لكن المخيخ الأيمن المصاب لا ينسّق توقيتها، لذلك القبضة ثقيلة وغير دقيقة في اليد اليمنى.',
+hand:'من عضلات اليد الصغيرة المسؤولة عن الحركات الدقيقة للأصابع. تعتمد كثيراً على تنسيق المخيخ.',
+arm:'عضلة كبيرة ترفع الذراع وتحركه. مسار الحركة الذي يغذيها سليم، لذلك يستطيع رفع يده وتحريكها يميناً ويساراً.',
+face:'من عضلات الوجه. ضعف أو تنميل نصف الوجه الأيمن سببه المسارات العصبية في جذع الدماغ، وليس العضلة نفسها.'};
+function arName(en){const s=en.toLowerCase().replace(/[._]\d+$/,'').replace(/[_]/g,' ');for(const [k,a,g] of NM)if(s.includes(k))return [a,g];return [null,null]}
+
+const ART={aorta:['الشريان الأبهر','أكبر شريان في الجسم، يخرج من البطين الأيسر. الضغط المرتفع جداً يجهده وقد يسبب تسلّخه.'],brachioceph:['الجذع العضدي الرأسي','يغذي الذراع اليمنى والجهة اليمنى من الرأس.'],
+cca:['الشريان السباتي المشترك','الشريان الرئيسي في الرقبة يحمل الدم إلى الوجه والدماغ.'],ica:['الشريان السباتي الداخلي','يدخل الجمجمة ويغذي الجزء الأمامي والأوسط من الدماغ.'],facial:['الشريان الوجهي','يغذي عضلات الوجه والشفاه.'],stemporal:['الشريان الصدغي السطحي','يغذي فروة الرأس والجبهة.'],
+subclav:['الشريان تحت الترقوة','يحمل الدم إلى الذراع، ويخرج منه الشريان الفقري للدماغ الخلفي.'],vert:['الشريان الفقري','يصعد في فقرات الرقبة، ويخرج منه شريان PICA الذي يغذي المخيخ السفلي وجذع الدماغ.'],basilar:['الشريان القاعدي','يتكوّن من اتحاد الشريانين الفقريين، ومنه شرايين المخيخ وجذع الدماغ.'],
+brachial:['الشريان العضدي','شريان الذراع؛ هنا يقيس الجهاز ضغط الدم.'],radial:['الشريان الكعبري','الشريان الذي نجس منه النبض عند الرسغ.'],ulnar:['الشريان الزندي','يغذي الجهة الداخلية للساعد واليد.'],palmar:['القوس الراحي','قوس شرياني في كف اليد تخرج منه شرايين الأصابع.'],digital:['شرايين الأصابع','شرايين دقيقة تغذي كل إصبع.'],
+iliac:['الشريان الحرقفي','يتفرع من الأبهر إلى الساقين.'],femoral:['الشريان الفخذي','الشريان الرئيسي للساق.'],tibial:['شرايين الساق','تغذي الساق والقدم.'],renal:['الشريان الكلوي','يغذي الكلية؛ الضغط المرتفع مع السكر يتلف الكلى.'],
+mca:['الشريان الدماغي الأوسط','أكبر شرايين الدماغ، يغذي الجانب الخارجي: الحركة والإحساس واللغة.'],aca:['الشريان الدماغي الأمامي','يغذي الجهة الداخلية والأمامية من الدماغ.'],pca:['الشريان الدماغي الخلفي','يغذي الفص القذالي (الرؤية) وأسفل الدماغ.'],pcom:['الشريان الموصل الخلفي','جزء من دائرة ويليس التي تربط شرايين الدماغ ببعضها.'],acom:['الشريان الموصل الأمامي','يربط الشريانين الأماميين — جزء من دائرة ويليس.'],
+pica:['شريان PICA (المخيخي الخلفي السفلي)','يغذي الجزء السفلي من المخيخ والجزء الجانبي من النخاع المستطيل.'],aica:['شريان AICA (المخيخي الأمامي السفلي)','يغذي الجزء الأمامي السفلي من المخيخ وجزءاً من جذع الدماغ.'],sca:['شريان SCA (المخيخي العلوي)','يغذي الجزء العلوي من المخيخ.'],
+coronary:['الشرايين التاجية','تغذي عضلة القلب نفسها. الضغط والسكر يسرّعان تضيّقها.'],plexus:['الضفيرة العضدية','شبكة الأعصاب الخارجة من الرقبة إلى الذراع.'],median:['العصب المتوسط','يحرّك عضلات ثني الأصابع والإبهام وينقل إحساس معظم الكف.'],ulnar_n:['العصب الزندي','يحرك عضلات اليد الصغيرة الدقيقة وينقل إحساس الخنصر.'],radial_n:['العصب الكعبري','يبسط الرسغ والأصابع.'],
+cn5:['العصب الخامس (ثلاثي التوائم)','ينقل إحساس الوجه. جزء منه يمر داخل جذع الدماغ بجانب المخيخ.'],cn7:['العصب السابع (الوجهي)','يحرّك عضلات تعابير الوجه.']};
+function vesselInfo(n,g,state){
+  const key=Object.keys(ART).sort((a,b)=>b.length-a.length).find(k=>n.startsWith(k+'_')||n===k);
+  let [t,x]=key?ART[key]:['فرع شرياني صغير','فرع دقيق يغذي العضلات والأنسجة المحيطة.'];
+  if(g==='twig'){t='فرع صغير من '+t;}
+  const side=n.endsWith('_R')?' — الجهة اليمنى':n.endsWith('_L')?' — الجهة اليسرى':'';
+  if(state==='blocked')x='<b style="color:#ff8a8d">مسدود في هذا المثال.</b> '+x+' انقطاع الدم هنا سبب الجلطة في المخيخ الأيمن.';
+  if(state==='affected')x='<b style="color:#ffb35c">المسار المتأثر.</b> '+x+' يفسّر تنميل نصف الوجه الأيمن.';
+  return [t+side,x];
+}
+
+// ---------- materials ----------
+function striated(color,rough){
+  const m=new THREE.MeshStandardMaterial({color,roughness:rough,metalness:0.0,emissive:0x000000});
+  m.userData.axis={value:new THREE.Vector3(0,1,0)};m.userData.hot={value:0};
+  m.onBeforeCompile=s=>{
+    s.uniforms.uAxis=m.userData.axis;s.uniforms.uHot=m.userData.hot;s.uniforms.uTime=U.time;
+    s.vertexShader=s.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vW;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=(modelMatrix*vec4(transformed,1.0)).xyz;');
+    s.fragmentShader=s.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW;uniform vec3 uAxis;uniform float uHot;uniform float uTime;')
+    .replace('#include <color_fragment>',`#include <color_fragment>
+      vec3 a=normalize(uAxis);vec3 q=vW-a*dot(vW,a);vec3 p1=normalize(cross(a,abs(a.y)<.9?vec3(0,1,0):vec3(1,0,0)));vec3 p2=cross(a,p1);
+      float along=dot(vW,a);
+      float f=sin(dot(q,p1)*2600.0+sin(along*220.0)*1.6)*.5+.5; float g=sin(dot(q,p2)*1900.0+along*60.0)*.5+.5;
+      float fib=smoothstep(.15,.85,f*.7+g*.3);
+      float aa=clamp(1.0-fwidth(dot(q,p1)*2600.0)*0.35,0.0,1.0);
+      diffuseColor.rgb*=mix(.9,mix(.62,1.12,fib),aa);
+      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(1.0,.42,.05),uHot*(.3+.22*sin(uTime*4.0)));`);
+  };
+  m.customProgramCacheKey=()=>'striated';
+  return m;
+}
+const boneMat=new THREE.MeshStandardMaterial({color:0xe9dfc8,roughness:.55});
+const skinMat=new THREE.MeshStandardMaterial({color:0xd9b49a,roughness:.6,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide});
+const cortexMat=new THREE.MeshStandardMaterial({color:0xe9b9b3,roughness:.68,clippingPlanes:[clipPlane],clipShadows:true,side:THREE.DoubleSide});
+const cblMat=new THREE.MeshStandardMaterial({color:0xd99aa4,roughness:.6});
+const lesionMat=new THREE.MeshStandardMaterial({color:0xff3b44,roughness:.5,emissive:0x770000});
+const stemMat=new THREE.MeshStandardMaterial({color:0xe7c6a8,roughness:.6});
+const cordMat=new THREE.MeshStandardMaterial({color:0xf0dcb0,roughness:.55});
+const heartMat=new THREE.MeshStandardMaterial({color:0xa61e2a,roughness:.42,emissive:0x220000});
+
+function flowMat(base,emis,speed,flow=true){
+  const m=new THREE.MeshStandardMaterial({color:base,roughness:.35,emissive:emis});
+  m.onBeforeCompile=s=>{s.uniforms.uTime=U.time;s.uniforms.uBp=U.bp;
+    s.vertexShader=s.vertexShader.replace('#include <common>','#include <common>\nattribute float aS;varying float vS;').replace('#include <begin_vertex>','#include <begin_vertex>\nvS=aS;');
+    s.fragmentShader=s.fragmentShader.replace('#include <common>','#include <common>\nvarying float vS;uniform float uTime;uniform float uBp;')
+    .replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
+      ${flow?`float ph=fract(vS*${speed.toFixed(1)}-uTime*(1.0+uBp*2.2));float pulse=smoothstep(.0,.12,ph)*smoothstep(.45,.12,ph);
+      totalEmissiveRadiance+=vec3(1.0,.15,.12)*pulse*(.18+uBp*.6);diffuseColor.rgb*=1.0+pulse*.15;`:''}`);};
+  m.customProgramCacheKey=()=>'flow'+speed+flow+emis;return m;
+}
+const artMat=flowMat(0xd3202c,0x3a0000,40),twigMat=flowMat(0xc41e2a,0x2a0000,60),brainArtMat=flowMat(0xe02a33,0x400000,90),corMat=flowMat(0xd3202c,0x400000,60);
+const blockedMat=new THREE.MeshStandardMaterial({color:0x2a2025,roughness:.7});
+const nerveMat=new THREE.MeshStandardMaterial({color:0xf2cc3d,roughness:.4,emissive:0x2a1e00});
+const affNerveMat=new THREE.MeshStandardMaterial({color:0xff9a1f,roughness:.4,emissive:0x8a3a00});
+
+// ---------- loading ----------
+const loader=new GLTFLoader();loader.setMeshoptDecoder(MeshoptDecoder);
+const prog={};const setP=(k,v)=>{prog[k]=v;const t=Object.values(prog);$('#lbar').style.width=(t.reduce((a,b)=>a+b,0)/4*100)+'%'};
+async function getBuf(u,k){
+  async function pull(url){const r=await fetch(url);if(!r.ok)throw new Error(r.status);const tot=+r.headers.get('content-length')||0;
+    if(!r.body||!tot){const b=await r.arrayBuffer();setP(k,1);return b}
+    const rd=r.body.getReader();const parts=[];let got=0;for(;;){const {done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;setP(k,Math.min(1,got/tot))}
+    const out=new Uint8Array(got);let o=0;for(const p of parts){out.set(p,o);o+=p.length}return out.buffer}
+  try{return await pull(u)}catch(e){
+    const txt=new TextDecoder().decode(await pull(u+'.b64.txt'));const bin=atob(txt.trim());const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a.buffer}}
+const parseG=buf=>new Promise((res,rej)=>loader.parse(buf,'',res,rej));
+const [body,organs,pj,tb]=await Promise.all([
+  getBuf('models/body.glb','b').then(parseG),getBuf('models/organs.glb','o').then(parseG),
+  fetch('models/paths.json').then(r=>{setP('p',1);return r.json()}),getBuf('models/tracts.bin','t')]);
+$('#ltxt').textContent='جارٍ بناء الشرايين والأعصاب…';await new Promise(r=>setTimeout(r,30));
+
+// body: bones + muscles
+const tmpV=new THREE.Vector3(),box=new THREE.Box3();
+body.scene.updateMatrixWorld(true);
+const bodyMeshes=[];body.scene.traverse(o=>{if(o.isMesh)bodyMeshes.push(o)});
+for(const o of bodyMeshes){
+  const isBone=(o.material.name||'').includes('Bone');
+  const en=o.name||o.parent?.name||'';
+  box.setFromObject(o);const c=box.getCenter(new THREE.Vector3());
+  const [ar,grp]=arName(en);
+  const right=c.x<-0.004,left=c.x>0.004;
+  let mat;
+  if(isBone)mat=boneMat;else{
+    mat=striated(0xb3322c,.55);
+    // principal axis from samples (world)
+    const pa=o.geometry.attributes.position,n=pa.count,st=Math.max(1,Math.floor(n/160));const pts=[];const mean=new THREE.Vector3();
+    for(let i=0;i<n;i+=st){tmpV.fromBufferAttribute(pa,i).applyMatrix4(o.matrixWorld);pts.push(tmpV.clone());mean.add(tmpV)}
+    mean.divideScalar(pts.length);let best=new THREE.Vector3(0,1,0),bv=-1;
+    // power iteration on covariance
+    let v=new THREE.Vector3(.3,1,.2).normalize();
+    for(let it=0;it<8;it++){const w=new THREE.Vector3();for(const p of pts){const d=p.clone().sub(mean);w.addScaledVector(d,d.dot(v))}v=w.normalize()}
+    mat.userData.axis.value.copy(v);
+    o.userData.hotGroup=right&&(grp==='grip'||grp==='hand'||grp==='face')?grp:null;
+  }
+  const mesh=new THREE.Mesh(o.geometry,mat);mesh.applyMatrix4(o.matrixWorld);mesh.name=en;
+  mesh.userData={kind:isBone?'bone':'muscle',en,ar,grp,side:right?'R':left?'L':'',hot:o.userData.hotGroup};
+  layer(isBone?'bones':'muscles').add(mesh);pickables.push(mesh);
+}
+// organs
+const ORG={cortex:['cortex','الدماغ الكبير (القشرة)','سطح الدماغ بتلافيفه. كل منطقة لها وظيفة: الحركة، الإحساس، اللغة، الرؤية والتفكير. فعّل «تلوين الفصوص» لترى الأقسام.'],
+cbl_L:['cerebellum','المخيخ — النصف الأيسر','يضبط التوازن وتنسيق حركة الجهة اليسرى. سليم.'],cbl_R:['cerebellum','المخيخ — النصف الأيمن','يضبط تنسيق اليد والرجل اليمنى. الجزء العلوي منه سليم.'],
+cbl_R_lesion:['lesion','المخيخ الأيمن — منطقة الجلطة','الجزء السفلي من المخيخ الأيمن الذي انقطع عنه الدم من شريان PICA. هذا يفسّر ثقل القبضة اليمنى وعدم دقة الأصابع وثقل الكلام.'],
+vermis:['cerebellum','الدودة المخيخية','وسط المخيخ، مسؤولة عن توازن الجذع والمشي.'],brainstem:['brainstem','جذع الدماغ','يربط الدماغ بالحبل الشوكي، وفيه مراكز التنفس والبلع ونوى أعصاب الوجه. جزء صغير منه في الجهة اليمنى تأثر.'],
+spinalcord:['cord','الحبل الشوكي وجذور الأعصاب','ينقل الأوامر من الدماغ إلى العضلات والإحساس من الجسم إلى الدماغ.'],heart:['heart','القلب','ينبض ويضخ الدم. حرّك مؤشر الضغط لترى كيف يتغير عمله.'],skin:['skin','الجلد','الطبقة الخارجية — شفافة لترى ما تحتها.']};
+const MAT={cortex:cortexMat,cbl_L:cblMat,cbl_R:cblMat,vermis:cblMat,cbl_R_lesion:lesionMat,brainstem:stemMat,spinalcord:cordMat,heart:heartMat,skin:skinMat};
+let heartMesh,cortexMesh;
+function bake(src,mat){const g=new THREE.BufferGeometry();for(const n of ['position','normal','color']){const a=src.attributes[n];if(!a)continue;const k=a.itemSize,arr=new Float32Array(a.count*k);
+  for(let i=0;i<a.count;i++){arr[i*k]=a.getX(i);if(k>1)arr[i*k+1]=a.getY(i);if(k>2)arr[i*k+2]=a.getZ(i);if(k>3)arr[i*k+3]=a.getW(i)}g.setAttribute(n,new THREE.BufferAttribute(arr,k))}
+  if(src.index)g.setIndex(src.index.clone());g.applyMatrix4(mat);if(!g.attributes.normal)g.computeVertexNormals();return g}
+organs.scene.updateMatrixWorld(true);
+const orgMeshes=[];organs.scene.traverse(o=>{if(o.isMesh)orgMeshes.push(o)});
+for(const o of orgMeshes){
+  const key=Object.keys(ORG).find(k=>o.name===k||o.parent?.name===k)||Object.keys(ORG).sort((a,b)=>b.length-a.length).find(k=>o.name.startsWith(k));if(!key)continue;
+  const [lay,ar,txt]=ORG[key];
+  const g=bake(o.geometry,o.matrixWorld);
+  const mesh=new THREE.Mesh(g,MAT[key]);mesh.name=key;
+  mesh.userData={kind:'organ',ar,txt};
+  if(key==='cortex'){cortexMesh=mesh;mesh.userData.colors=g.attributes.color;g.deleteAttribute('color');}
+  if(key==='heart'){heartMesh=mesh;g.computeBoundingBox();const c=g.boundingBox.getCenter(new THREE.Vector3());g.translate(-c.x,-c.y,-c.z);
+    const piv=new THREE.Group();piv.position.copy(c);piv.add(mesh);layer('heart').add(piv);heartMesh.userData.piv=piv;pickables.push(mesh);continue}
+  layer(lay).add(mesh);if(key!=='skin')pickables.push(mesh);
+}
+const lobeMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.65,clippingPlanes:[clipPlane],side:THREE.DoubleSide});
+
+// ---------- vessels & nerves ----------
+const buckets={};
+pj.paths.forEach((p,pi)=>{
+  const pts=p.p.map(a=>new THREE.Vector3(a[0],a[1],a[2]));if(pts.length<2)return;
+  const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal');
+  const len=curve.getLength();const seg=Math.max(4,Math.min(80,Math.round(len/(p.g.startsWith('brain')?0.0025:0.008))));
+  const rad=p.r*(p.g==='brainart'?1.25:1);
+  const tg=new THREE.TubeGeometry(curve,seg,rad,p.g==='twig'||p.g==='brainart'?5:8,false);
+  const nv=tg.attributes.position.count,aS=new Float32Array(nv),aP=new Float32Array(nv),uv=tg.attributes.uv;
+  for(let i=0;i<nv;i++){aS[i]=uv.getX(i)*len;aP[i]=pi}
+  tg.setAttribute('aS',new THREE.BufferAttribute(aS,1));tg.setAttribute('aP',new THREE.BufferAttribute(aP,1));
+  const feed=p.g==='art'&&/^(ica|vert|cca)_/.test(p.n);
+  const bk=p.s==='blocked'?'blocked':p.s==='affected'?'affnerve':feed?'feed':p.g;
+  (buckets[bk]||(buckets[bk]=[])).push(tg);
+});
+const BMAT={feed:[artMat,'brainart'],art:[artMat,'arteries'],twig:[twigMat,'arteries'],coronary:[corMat,'heart'],brainart:[brainArtMat,'brainart'],blocked:[blockedMat,'brainart'],nerve:[nerveMat,'nerves'],cn:[nerveMat,'nerves'],affnerve:[affNerveMat,'nerves']};
+for(const [k,list] of Object.entries(buckets)){
+  const g=mergeGeometries(list.map(x=>{x.deleteAttribute('uv');return x}),false);
+  const [m,lay]=BMAT[k]||[artMat,'arteries'];const mesh=new THREE.Mesh(g,m);mesh.userData={kind:'vessel'};mesh.name=k;
+  if(k==='coronary'){const piv=heartMesh.userData.piv;mesh.position.sub(piv.position);piv.add(mesh);}else layer(lay).add(mesh);
+  pickables.push(mesh);
+}
+// clot
+const pica=pj.paths.find(p=>p.n==='pica_R'&&p.s==='blocked');
+const clot=new THREE.Mesh(new THREE.SphereGeometry(0.0016,16,12),new THREE.MeshStandardMaterial({color:0x3b0a0e,emissive:0x550000,roughness:.8}));
+if(pica){clot.position.set(...pica.p[1]);}layer('brainart').add(clot);clot.userData={kind:'organ',ar:'الخثرة',txt:'كتلة دم متجمدة سدّت شريان PICA الأيمن. السكر والضغط المرتفع يسرّعان تكوّن الترسبات التي تبدأ منها الخثرات.'};pickables.push(clot);
+// lateral medulla lesion marker
+const lm=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshBasicMaterial({color:0xff3b44,transparent:true,opacity:.55,depthWrite:false}));
+lm.scale.set(0.004,0.009,0.005);lm.position.set(-0.009,1.558,-0.012);layer('lesion').add(lm);lm.userData={kind:'organ',ar:'الجزء الجانبي الأيمن من النخاع المستطيل',txt:'منطقة صغيرة في جذع الدماغ يغذيها شريان PICA أيضاً. فيها نواة إحساس الوجه — تأثرها يفسّر تنميل نصف الوجه الأيمن.'};pickables.push(lm);
+
+// ---------- tracts ----------
+const tracts=(()=>{const meta=pj.tracts,n=meta.n_pts;const posBytes=n*6;const q=new Int16Array(tb.slice(0,posBytes));
+  const off=new Uint32Array(tb.slice(posBytes,posBytes+(meta.n_lines+1)*4));const grp=new Uint8Array(tb.slice(posBytes+(meta.n_lines+1)*4));
+  const COL={CST:0xb678ff,ICP:0xff7a3d,MCP:0xff7a3d,SCP:0xff7a3d,DRTT:0xffb03d,ML:0x3dd6ff,CNV:0xffe14d,CNVII:0xffe14d,CNVIII:0xffe14d,CNII:0xffe14d,CC:0x8fe388,OR:0x7ad0ff};
+  const pos=[],col=[];const c=new THREE.Color();const s=meta.scale,o=meta.origin;
+  for(let l=0;l<meta.n_lines;l++){const g=meta.groups[grp[l]];const base=g.replace(/_(L|R)$/,'');c.set(COL[base]??0x9aa7ff);
+    const hit=(base==='ICP'||base==='DRTT')&&g.endsWith('_R');if(hit)c.set(0xff3030);
+    for(let i=off[l];i<off[l+1]-1;i++){for(const k of [i,i+1]){pos.push(q[k*3]*s+o[0],q[k*3+1]*s+o[1],q[k*3+2]*s+o[2]);col.push(c.r,c.g,c.b)}}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+  const m=new THREE.LineSegments(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.9,depthTest:true}));layer('tracts').add(m);return m})();
+
+// ---------- camera (Roblox-style orbit + fly) ----------
+const cam={t:new THREE.Vector3(0,1,0),yaw:0,pitch:.08,dist:2.4},goal={t:new THREE.Vector3(0,1,0),yaw:0,pitch:.08,dist:2.4};
+const VIEWS={body:[[0,0.92,0],0.25,.05,2.5],handR:[[-0.27,0.8,0.03],0.25,.1,0.32],faceR:[[-0.02,1.58,0.05],-0.6,.05,0.32],neck:[[-0.01,1.47,0.02],-0.5,.1,0.42],
+brain:[[0,1.63,0],0.6,.25,0.42],brainBack:[[0,1.6,-0.03],Math.PI-0.4,.25,0.36],brainBase:[[0,1.58,0.0],0.2,-1.15,0.3],cbl:[[0,1.58,-0.04],Math.PI-0.6,-.25,0.22],
+lesion:[[-0.03,1.575,-0.05],Math.PI-0.9,-.35,0.16],pica:[[-0.015,1.56,-0.02],-1.9,-.45,0.12],stem:[[-0.005,1.57,-0.01],-1.3,-.1,0.14],heart:[[0.02,1.28,0.05],0.35,.05,0.38],aorta:[[0.01,1.2,0],0.6,.05,0.75]};
+function go(k){const v=VIEWS[k];if(!v)return;goal.t.set(...v[0]);let y=v[1];while(y-cam.yaw>Math.PI)y-=2*Math.PI;while(y-cam.yaw<-Math.PI)y+=2*Math.PI;goal.yaw=y;goal.pitch=v[2];goal.dist=v[3];}
+const ptrs=new Map();let pinch=0,moved=0,lastMid=null;
+canvas.addEventListener("pointerdown",e=>{try{canvas.setPointerCapture(e.pointerId)}catch(_){};ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=0;if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch=Math.hypot(a.x-b.x,a.y-b.y);lastMid={x:(a.x+b.x)/2,y:(a.y+b.y)/2}}});
+canvas.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;moved+=Math.abs(dx)+Math.abs(dy);
+  if(ptrs.size===1){goal.yaw-=dx*.0065;goal.pitch=Math.max(-1.45,Math.min(1.45,goal.pitch+dy*.0055));}
+  else if(ptrs.size===2){const [a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch)goal.dist=Math.max(0.03,Math.min(5,goal.dist*pinch/d));pinch=d;
+    const mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};if(lastMid){panBy(-(mid.x-lastMid.x)*goal.dist*.0016,(mid.y-lastMid.y)*goal.dist*.0016)}lastMid=mid;}});
+const up=e=>{if(ptrs.size===1&&moved<8)pick(e);ptrs.delete(e.pointerId);pinch=0;lastMid=null};
+canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId);pinch=0;lastMid=null});
+canvas.addEventListener('wheel',e=>{e.preventDefault();goal.dist=Math.max(0.03,Math.min(5,goal.dist*(1+e.deltaY*.0012)))},{passive:false});
+function basis(){const f=new THREE.Vector3(-Math.sin(goal.yaw),0,-Math.cos(goal.yaw));const r=new THREE.Vector3(Math.cos(goal.yaw),0,-Math.sin(goal.yaw));return [f,r]}
+function panBy(x,y){const [f,r]=basis();goal.t.addScaledVector(r,x);goal.t.y+=y}
+const held=new Set();
+$$('[data-mv]').forEach(b=>{const k=b.dataset.mv;const on=e=>{e.preventDefault();held.add(k);b.classList.add('on')},off=()=>{held.delete(k);b.classList.remove('on')};
+  b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off)});
+const KEYS={ArrowUp:'f',KeyW:'f',ArrowDown:'b',KeyS:'b',ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',KeyE:'u',KeyQ:'d',Equal:'i',Minus:'o'};
+addEventListener('keydown',e=>{if(KEYS[e.code]&&e.target.tagName!=='INPUT'){held.add(KEYS[e.code]);e.preventDefault()}});addEventListener('keyup',e=>KEYS[e.code]&&held.delete(KEYS[e.code]));
+$('#reset').onclick=()=>go(curTab==='brain'||curTab==='stroke'?(curTab==='stroke'?'lesion':'brain'):curTab==='heart'||curTab==='bp'?'heart':'body');
+function stepMove(dt){if(!held.size)return;const sp=Math.max(0.05,goal.dist*0.9)*dt;const [f,r]=basis();
+  if(held.has('f'))goal.t.addScaledVector(f,sp);if(held.has('b'))goal.t.addScaledVector(f,-sp);
+  if(held.has('l'))goal.t.addScaledVector(r,-sp);if(held.has('r'))goal.t.addScaledVector(r,sp);
+  if(held.has('u'))goal.t.y+=sp;if(held.has('d'))goal.t.y-=sp;
+  if(held.has('i'))goal.dist=Math.max(0.03,goal.dist*(1-1.3*dt));if(held.has('o'))goal.dist=Math.min(5,goal.dist*(1+1.3*dt));}
+
+// ---------- picking ----------
+const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
+const visible=o=>{for(let p=o;p;p=p.parent)if(!p.visible)return false;return true};
+let sel=null,selOld=null;
+function pick(e){
+  ndc.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(ndc,camera);
+  const hits=ray.intersectObjects(pickables.filter(visible),false).filter(h=>!(h.object.material.clippingPlanes&&clipPlane.distanceToPoint(h.point)<0));
+  const h=hits[0];if(!h){hideInfo();return}
+  const o=h.object,d=o.userData;let title,txt,en='';
+  if(d.kind==='vessel'){const ap=o.geometry.attributes.aP;const pi=ap.getX(h.face.a);const p=pj.paths[pi];[title,txt]=vesselInfo(p.n,p.g,p.s);}
+  else if(d.kind==='muscle'||d.kind==='bone'){
+    const sideTxt=d.side==='R'?(d.kind==='bone'?' — اليمنى':' — الجهة اليمنى'):d.side==='L'?' — الجهة اليسرى':'';
+    title=(d.ar||(d.kind==='bone'?'عظمة':'عضلة'))+sideTxt;en=d.en.replace(/[._]\d+$/,'').replace(/_/g,' ');
+    txt=d.kind==='bone'?'جزء من الهيكل العظمي.':(d.grp&&GROUPTXT[d.grp])||'عضلة هيكلية. الخطوط الدقيقة على سطحها تمثّل اتجاه الألياف العضلية.';
+    if(d.kind==='muscle'&&d.grp&&d.side==='L'&&(d.grp==='grip'||d.grp==='hand'))txt='من عضلات القبضة والأصابع في اليد اليسرى — تعمل بشكل طبيعي لأن المخيخ الأيسر سليم.';
+    highlight(o);
+  } else {title=d.ar;txt=d.txt}
+  showInfo(title,txt,en);
+}
+function highlight(o){if(selOld){selOld.material=selOld.userData._m;selOld=null}
+  if(o.userData.kind==='muscle'||o.userData.kind==='bone'){o.userData._m=o.material;const m=o.material.clone();m.onBeforeCompile=o.material.onBeforeCompile;m.customProgramCacheKey=o.material.customProgramCacheKey;m.userData=o.material.userData;m.emissive=new THREE.Color(0x3a5cff);m.emissiveIntensity=.6;o.material=m;selOld=o}}
+function showInfo(t,x,en){$('#infoBody').innerHTML='';const h=document.createElement('h3');h.textContent=t;const p=document.createElement('div');p.innerHTML=x;$('#infoBody').append(h);if(en){const e=document.createElement('div');e.className='en';e.textContent=en;$('#infoBody').append(e)}$('#infoBody').append(p);$('#info').style.display='block'}
+function hideInfo(){$('#info').style.display='none';if(selOld){selOld.material=selOld.userData._m;selOld=null}}
+$('#infoX').onclick=hideInfo;
+
+// ---------- layers & tabs ----------
+const LAYERNAMES={skin:'الجلد',muscles:'العضلات',bones:'العظام',arteries:'الشرايين',nerves:'الأعصاب',brain:'الدماغ',heart:'القلب',cortex:'القشرة',lobes:'تلوين الفصوص',cerebellum:'المخيخ',brainstem:'جذع الدماغ',brainart:'شرايين الدماغ',tracts:'الألياف العصبية',cord:'الحبل الشوكي'};
+const state={lobes:false};
+const isOn=k=>k==='lobes'?state.lobes:k==='brain'?L.cortex.visible:L[k].visible;
+function setLayer(k,v){if(k==='lobes'){state.lobes=v;cortexMesh.material=v?lobeMat:cortexMat;if(v&&!cortexMesh.geometry.attributes.color)cortexMesh.geometry.setAttribute('color',cortexMesh.userData.colors);return}
+  if(k==='brain'){['cortex','cerebellum','brainstem','brainart','lesion'].forEach(n=>L[n].visible=v);return}
+  L[k].visible=v;if(k==='cerebellum')L.lesion.visible=v;}
+const PRESET={body:{skin:true,muscles:true,bones:true,arteries:true,nerves:true,heart:true,cortex:false,cerebellum:false,brainstem:false,brainart:false,tracts:false,cord:false,lesion:false},
+brain:{skin:false,muscles:false,bones:false,arteries:false,nerves:false,heart:false,cortex:true,cerebellum:true,brainstem:true,brainart:true,tracts:false,cord:true,lesion:true},
+stroke:{skin:false,muscles:true,bones:false,arteries:true,nerves:true,heart:false,cortex:true,cerebellum:true,brainstem:true,brainart:true,tracts:false,cord:false,lesion:true},
+heart:{skin:false,muscles:false,bones:false,arteries:true,nerves:false,heart:true,cortex:false,cerebellum:false,brainstem:false,brainart:false,tracts:false,cord:false,lesion:false}};
+PRESET.bp=PRESET.heart;
+const TITLES={body:'الجسم',brain:'الدماغ والمخيخ',stroke:'جلطة المخيخ الأيمن',heart:'القلب',bp:'ضغط الدم',sos:'متى تتصلون بالإسعاف؟'};
+const FIRST={body:'body',brain:'brain',stroke:'lesion',heart:'heart',bp:'heart'};
+let curTab='body';
+function openTab(t,{keepCam=false,open=true}={}){
+  const same=t===curTab&&document.body.classList.contains('sheet-open');
+  curTab=t;$$('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
+  if(PRESET[t]){for(const [k,v] of Object.entries(PRESET[t]))L[k].visible=v;if(t!=='brain')setLayer('lobes',false);clipPlane.constant=0.075;}
+  hot=(t==='stroke');for(const m of L.muscles.children)m.visible=!hot||!!m.userData.hot;
+  if(!keepCam&&FIRST[t])go(FIRST[t]);
+  if(same){document.body.classList.remove('sheet-open');return}
+  $('#shTitle').textContent=TITLES[t];const body=$('#shBody');body.innerHTML='';body.append($('#t-'+t).content.cloneNode(true));body.scrollTop=0;
+  body.querySelectorAll('[data-layers]').forEach(w=>{for(const k of w.dataset.layers.split(',')){const b=document.createElement('button');b.className='chip';b.textContent=LAYERNAMES[k];b.setAttribute('aria-pressed',isOn(k));
+    b.onclick=()=>{setLayer(k,!isOn(k));b.setAttribute('aria-pressed',isOn(k))};w.append(b)}});
+  body.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{go(b.dataset.go);if(innerHeight<760)document.body.classList.remove('sheet-open')});
+  body.querySelectorAll('[data-bp]').forEach(w=>{w.append($('#t-bpctl').content.cloneNode(true));w.querySelectorAll('input').forEach(i=>{i.value=bp[i.dataset.k];i.oninput=()=>{bp[i.dataset.k]=+i.value;updBP()}})});
+  const cl=body.querySelector('#clip');if(cl){cl.value=clipPlane.constant;cl.oninput=()=>{clipPlane.constant=+cl.value}}
+  if(open)document.body.classList.add('sheet-open');updBP();
+}
+$$('nav.tabs button').forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
+$('#shClose').onclick=()=>document.body.classList.remove('sheet-open');
+$('#sos').onclick=()=>{curTab='sos';$('#shTitle').textContent=TITLES.sos;$('#shBody').innerHTML='';$('#shBody').append($('#t-sos').content.cloneNode(true));document.body.classList.add('sheet-open')};
+$('#bpPill').onclick=()=>openTab('bp');
+// swipe down on sheet head closes
+{let y0=null;$('.sh-head').addEventListener('pointerdown',e=>y0=e.clientY);addEventListener('pointerup',e=>{if(y0!==null&&e.clientY-y0>40)document.body.classList.remove('sheet-open');y0=null})}
+
+// ---------- blood pressure ----------
+const bp={s:200,d:110};let hot=false;
+const CATS=[[180,120,'أزمة ارتفاع ضغط','#c62828'],[140,90,'المرحلة 2','#e0701e'],[130,80,'المرحلة 1','#e0a21e'],[120,999,'مرتفع','#8fae2b'],[0,0,'طبيعي','#2e9e6b']];
+function bpK(){return Math.min(1,Math.max(0,(bp.s-110)/140))}
+function updBP(){
+  const k=bpK();U.bp.value=k;$('#bpTop').textContent=bp.s+'/'+bp.d;
+  const c=CATS.find(([s,d])=>bp.s>=s||bp.d>=d);const hr=Math.round(68+k*32);
+  $$('[data-v]').forEach(el=>{const v=el.dataset.v;
+    if(v==='s')el.textContent=bp.s;if(v==='d')el.textContent=bp.d;if(v==='hr')el.textContent=hr+' نبضة/د';
+    if(v==='cat'){el.textContent=c[2];el.style.background=c[3]}
+    if(v==='load')el.style.width=Math.min(100,Math.max(4,(bp.s-90)/160*100))+'%';
+    if(v==='txt')el.textContent=(bp.s>=120?'+'+Math.round((bp.s/120-1)*100)+'% جهد إضافي. ':'')+(bp.s>=180?'القلب يدفع الدم ضد مقاومة عالية جداً، والشرايين الصغيرة في الدماغ والكلى والعين تحت ضغط قد يمزقها — مستوى طوارئ.':bp.s>=140?'جهد مستمر على القلب؛ مع الوقت يتضخم البطين الأيسر ويرتفع خطر جلطة جديدة.':bp.s>=120?'أعلى من المثالي بقليل.':'ضغط مثالي، القلب يعمل براحة.')});
+  heartMat.emissive.setRGB(.13+.35*k,0,0);
+}
+
+// ---------- resize & loop ----------
+function resize(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clock=new THREE.Clock();let phase=0;const off3=new THREE.Vector3();
+const hotMeshes=L.muscles.children.filter(m=>m.userData.hot);
+function frame(){
+  const dt=Math.min(clock.getDelta(),.05);U.time.value+=still?0:dt;stepMove(dt);
+  const a=1-Math.pow(.0015,dt);cam.t.lerp(goal.t,a);cam.yaw+=(goal.yaw-cam.yaw)*a;cam.pitch+=(goal.pitch-cam.pitch)*a;cam.dist+=(goal.dist-cam.dist)*a;
+  off3.set(Math.sin(cam.yaw)*Math.cos(cam.pitch),Math.sin(cam.pitch),Math.cos(cam.yaw)*Math.cos(cam.pitch)).multiplyScalar(cam.dist);
+  camera.position.copy(cam.t).add(off3);camera.lookAt(cam.t);camera.near=Math.max(0.001,cam.dist*0.02);camera.updateProjectionMatrix();
+  const k=bpK();phase+=dt*(68+k*32)/60*Math.PI*2;const beat=still?0:Math.pow(Math.max(0,Math.sin(phase)),6);
+  if(heartMesh){const piv=heartMesh.userData.piv;const s=1+k*.08;piv.scale.set(s*(1+beat*.05),s*(1-beat*.035),s*(1+beat*.05));}
+  const pulse=still?.6:(Math.sin(U.time.value*3.2)+1)/2;
+  lesionMat.emissive.setRGB(.3+.5*pulse,0,0);lm.material.opacity=.3+.4*pulse;
+  for(const m of hotMeshes)m.material.userData.hot.value=hot?1:0;
+  renderer.render(scene,camera);requestAnimationFrame(frame);
+}
+openTab('body',{open:false});cam.t.copy(goal.t);cam.yaw=goal.yaw;cam.pitch=goal.pitch;cam.dist=goal.dist+1.2;
+frame();
+$('#load').style.opacity=0;setTimeout(()=>$('#load').remove(),600);
+window.__ready=true;
+}catch(e){fail(e)}
+</script>
+</body>
+</html>
